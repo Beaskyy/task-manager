@@ -11,7 +11,7 @@ app.use(express.json());
 app.use("/api/v1/tasks", tasks);
 app.use("/api/v1/tasks/:id", tasks);
 
-const port = 5000;
+const port = 3000;
 
 const start = async () => {
   try {
