@@ -1,5 +1,6 @@
 const Task = require("../models/Task");
 const asyncWrapper = require("../middleware/async");
+const { createCustomError } = require("../errors/custom-error");
 
 const getAllTasks = asyncWrapper(async (req, res) => {
   const tasks = await Task.find({});
@@ -15,23 +16,24 @@ const createTask = async (req, res) => {
   }
 };
 
-const getTask = asyncWrapper(async (req, res) => {
+const getTask = asyncWrapper(async (req, res, next) => {
   const { id: taskId } = req.params;
   const task = await Task.findOne({ _id: taskId });
   if (!task) {
-    return res.status(404).json({ msg: `cannot find task with id: ${taskId}` });
+    return next(createCustomError(`cannot find task with id: ${taskId}`, 404));
+    // return res.status(404).json({ msg: `cannot find task with id: ${taskId}` });
   }
   res.status(200).json({ task });
 });
 
-const updateTask = asyncWrapper(async (req, res) => {
+const updateTask = asyncWrapper(async (req, res, next) => {
   const { id: taskId } = req.params;
   const task = await Task.findOneAndUpdate({ _id: taskId }, req.body, {
     new: true,
     runValidators: true,
   });
   if (!task) {
-    return res.status(404).json({ msg: `cannot find task with id: ${taskId}` });
+    return next(createCustomError(`cannot find task with id: ${taskId}`, 404));
   }
   res.status(200).json({ task });
 });
